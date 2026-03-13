@@ -1,4 +1,4 @@
-## Project 1
+## [Project 1](./llm-palyground)
 
 ### Build an LLM Playground
 - LLM Overview and Foundations
@@ -20,7 +20,7 @@
 
 ![alt text](images/project1.png)
 
-## Project 2
+## [Project 2](./chatbot)
 
 ### Build a Customer Support Chatbot using RAGs and Prompt Engineering
 
@@ -48,7 +48,7 @@
 ![alt text](images/project2.png)
 
 
-## Project 3
+## [Project 3](./ask-the-web)
 
 ### Build an "Ask-the-Web" Agent similar to Perplexity with Tool calling
 
