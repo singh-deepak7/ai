@@ -84,8 +84,8 @@ Text is split into tokens.
 
 Example:
 
-    "Deepak learned AI"
-    → ["Deepak", "learned", "AI"]
+    "Jake learned AI"
+    → ["Jake", "learned", "AI"]
 
 Step 2 – Embedding
 
