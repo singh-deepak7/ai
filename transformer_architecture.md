@@ -97,7 +97,7 @@ Transformers don’t understand order by default, so position information is add
 
 Example:
 
-    "Deepak learned AI" ≠ "AI learned Deepak"
+    "Jake learned AI" ≠ "AI learned Jake"
 
 
 ## 6. Attention Mechanism (Core Idea)
@@ -201,6 +201,8 @@ Used for:
 
     - Generative models like GPT 
 
+#
+## [Practice](Transformer_Attention.ipynb)
 
 ## Key Takeaway
 
