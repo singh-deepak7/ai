@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+langchain
+faiss-cpu
+pypdf
+gradio
+requests
+python-dotenv
