@@ -15,17 +15,32 @@ llm = Ollama(
 )
 
 def format_docs(docs):
-    return "\n\n".join([doc.page_content[:600] for doc in docs])
+    context = []
+    sources = []
+
+    for doc in docs:
+        text = doc.page_content[:500]
+        context.append(text)
+
+        meta = doc.metadata
+        source = meta.get("source", "unknown")
+        page = meta.get("page", "N/A")
+        doc_type = meta.get("doc_type", "general")
+
+        sources.append(f"{source} (Page {page}, Type: {doc_type})")
+
+    return "\n\n".join(context), list(set(sources))
 
 def research(sub_question: str):
     now = datetime.now().astimezone()  # local timezone
     formatted_time = now.strftime("%m-%d-%y %H:%M:%S.%f %Z")[:-3]
     print(f"Research started ... {formatted_time}")
     docs = retriever.invoke(sub_question)
-    context = format_docs(docs)
+
+    context, sources = format_docs(docs)
 
     prompt = f"""
-    Answer briefly based only on context.
+    Answer briefly (2-4 sentences) using only the context.
 
     Context:
     {context}
@@ -36,4 +51,10 @@ def research(sub_question: str):
     Answer:
     """
 
-    return llm.invoke(prompt)
+    answer = llm.invoke(prompt)
+
+    return {
+        "question": sub_question,
+        "answer": answer,
+        "sources": sources
+    }

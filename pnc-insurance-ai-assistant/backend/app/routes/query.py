@@ -5,5 +5,10 @@ router = APIRouter()
 
 @router.post("/query")
 def query(q: str):
-    response = ask_question(q)
-    return {"response": response}
+    result = ask_question(q)
+
+    return {
+        "response": result.get("answer", ""),
+        "sources": result.get("sources", []),
+        "trace": result.get("trace", [])
+    }

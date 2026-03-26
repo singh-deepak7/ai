@@ -5,7 +5,7 @@ from datetime import datetime
 
 llm = Ollama(
     model="llama3.2:3b",
-    num_predict=200,
+    num_predict=150,
     temperature=0.3
 )
 
@@ -16,9 +16,9 @@ def synthesize(original_question: str, answers: list):
     combined = "\n".join(answers)
 
     prompt = f"""
-    Combine the answers into a final response.
+    Combine the answers into a clear final response.
 
-    Keep it concise (5-6 sentences).
+    Keep it concise (4-6 sentences max).
 
     Question:
     {original_question}
