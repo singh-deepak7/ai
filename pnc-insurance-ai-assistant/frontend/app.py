@@ -1,39 +1,91 @@
 import gradio as gr
 import requests
+import time
 
 API_URL = "http://127.0.0.1:8000/query"
 
-def ask(query):
+
+# ---------------------------
+# 🚀 Ask Function (Streaming)
+# ---------------------------
+def ask(query, history):
     res = requests.post(API_URL, params={"q": query})
     data = res.json()
 
-    answer = data.get("response", "No answer returned")
+    answer = data.get("response", "")
+    sources = "\n".join([f"📄 {s}" for s in data.get("sources", [])])
+    trace = "\n".join(data.get("trace", []))
+    confidence = str(data.get("confidence", "N/A"))
 
-    sources = "\n".join([
-        f"📄 {s}" for s in data.get("sources", [])
-    ])
+    history = history or []
 
-    trace = "\n".join([
-        f"{t}" for t in data.get("trace", [])
-    ])
+    # Add user message
+    history.append({"role": "user", "content": query})
 
-    return answer, sources, trace
+    streamed = ""
+    for char in answer:
+        streamed += char
+        time.sleep(0.01)
+
+        yield (
+            history + [{"role": "assistant", "content": streamed}],
+            sources,
+            trace,
+            confidence
+        )
 
 
-with gr.Blocks() as demo:
-    gr.Markdown("# 🧠 AI Insurance Assistant (Multi-Agent)")
+# ---------------------------
+# 🧹 Clear Chat
+# ---------------------------
+def clear_chat():
+    return [], "", "", ""
 
-    query = gr.Textbox(label="Ask a question")
+
+# ---------------------------
+# 🎨 UI Layout
+# ---------------------------
+with gr.Blocks(title="AI Insurance Assistant") as demo:
+
+    gr.Markdown("# 🧠 AI-Powered P&C Insurance Assistant")
+    gr.Markdown("Ask questions about policies, claims, underwriting, and reports.")
+
+    chatbot = gr.Chatbot(height=400)
 
     with gr.Row():
-        answer = gr.Textbox(label="💬 Answer", lines=6)
+        query = gr.Textbox(
+            placeholder="Ask something like: What does homeowners insurance cover?",
+            label="Your Question",
+            scale=4
+        )
+        submit_btn = gr.Button("Ask", variant="primary")
 
     with gr.Row():
-        sources = gr.Textbox(label="📚 Sources", lines=6)
-        trace = gr.Textbox(label="🧠 Agent Trace", lines=6)
+        clear_btn = gr.Button("Clear Chat")
 
-    btn = gr.Button("Ask")
+    with gr.Row():
+        sources = gr.Textbox(label="📚 Sources", lines=5)
+        confidence = gr.Textbox(label="📊 Confidence", lines=1)
 
-    btn.click(ask, inputs=query, outputs=[answer, sources, trace])
+    trace = gr.Textbox(label="🧠 Agent Trace", lines=8)
 
-demo.launch()
+    # ---------------------------
+    # 🔗 Actions
+    # ---------------------------
+    submit_btn.click(
+        ask,
+        inputs=[query, chatbot],
+        outputs=[chatbot, sources, trace, confidence]
+    )
+
+    clear_btn.click(
+        clear_chat,
+        outputs=[chatbot, sources, trace, confidence]
+    )
+
+
+# ---------------------------
+# ▶️ Run App
+# ---------------------------
+if __name__ == "__main__":
+    demo.launch()

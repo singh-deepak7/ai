@@ -10,5 +10,6 @@ def query(q: str):
     return {
         "response": result.get("answer", ""),
         "sources": result.get("sources", []),
-        "trace": result.get("trace", [])
+        "trace": result.get("trace", []),
+        "confidence": float(result.get("confidence", 0.0))  # ✅ force safe type
     }

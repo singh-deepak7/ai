@@ -16,6 +16,7 @@ def run_multi_agent(query: str):
 
     results = []
     all_sources = set()
+    confidences = []
 
     # Research
     for step in steps:
@@ -26,16 +27,23 @@ def run_multi_agent(query: str):
 
         results.append(result["answer"])
         all_sources.update(result["sources"])
+        confidences.append(result["confidence"])
 
     # Synthesis
     print("🧩 Synthesizing final answer...")
     trace.append("🧩 Synthesizer: Combining answers...")
     final_answer = synthesize(query, results)
 
+    final_confidence = float(
+        round(sum(confidences) / len(confidences), 2)
+    ) if confidences else 0.0
+
+    trace.append(f"📊 Confidence Score: {final_confidence}")
     trace.append("✅ Final answer ready")
 
     return {
         "answer": final_answer,
         "sources": sorted(list(all_sources)),
-        "trace": trace
+        "trace": trace,
+        "confidence": final_confidence
     }

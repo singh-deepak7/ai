@@ -35,7 +35,10 @@ def research(sub_question: str):
     now = datetime.now().astimezone()  # local timezone
     formatted_time = now.strftime("%m-%d-%y %H:%M:%S.%f %Z")[:-3]
     print(f"Research started ... {formatted_time}")
-    docs = retriever.invoke(sub_question)
+    docs_and_scores = vectorstore.similarity_search_with_score(sub_question, k=2)
+
+    docs = [d[0] for d in docs_and_scores]
+    scores = [d[1] for d in docs_and_scores]
 
     context, sources = format_docs(docs)
 
@@ -53,8 +56,13 @@ def research(sub_question: str):
 
     answer = llm.invoke(prompt)
 
+    # Convert FAISS distance → confidence
+    avg_score = float(sum(scores) / len(scores)) if scores else 1.0
+    confidence = round(1 / (1 + avg_score), 2)
+
     return {
         "question": sub_question,
         "answer": answer,
-        "sources": sources
+        "sources": sources,
+        "confidence": confidence
     }
