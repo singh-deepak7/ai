@@ -12,3 +12,6 @@ langchain-text-splitters
 
 cryptography
 pymupdf
+rank-bm25
+langchain-ollama
+langchain-openai
